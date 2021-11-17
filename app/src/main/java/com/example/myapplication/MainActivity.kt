@@ -59,6 +59,22 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context,DBHelper.DATABAS
         return data
     }
 
+    @SuppressLint("Range")
+    fun readDataByKey(value: String):Ders_Odev{
+        val sqliteDB = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $KEY = ?"
+        val result = sqliteDB.rawQuery(query, arrayOf(value))
+        val data = Ders_Odev()
+        if(result.moveToFirst()){
+            data.id = result.getString(result.getColumnIndex(ID)).toInt()
+            data.key = result.getString(result.getColumnIndex(KEY))
+            data.value = result.getString(result.getColumnIndex(VALUE))
+        }
+        result.close()
+        sqliteDB.close()
+        return data
+    }
+
 
 }
 
@@ -71,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.button.setOnClickListener {
-            showData(db.readData())
+            showData(db.readDataByKey(binding.editTextView.text.toString()))
         }
         db.insertData(Ders_Odev(key = "bil359", value = "Hello World from database"))
 
